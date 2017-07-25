@@ -49,7 +49,7 @@ prometheus-rancher-exporter:
     response_timeout: 5000
 
 pushgateway:
-  scale: $PUSHGATEWAY_INSTANCES_COUNT
+  scale: ${PUSHGATEWAY_INSTANCES_COUNT}
   start_on_create: true
   health_check:
     response_timeout: 2000
