@@ -2,7 +2,7 @@
   name: "Prometheus-Push-Mode"
   version: "0.0.1"
   description: "Prometheus Monitoring Solution"
-  uuid: prometheus-push
+  uuid: prometheus-push-mode-1
   minimum_rancher_version: v1.5.5
   questions:
   - variable: "RANCHER_SERVER"
