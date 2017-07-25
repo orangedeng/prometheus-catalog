@@ -1,9 +1,9 @@
 .catalog:
   name: "Prometheus-Push-Mode"
-  version: "0.0.1"
+  version: "0.0.2"
   description: "Prometheus Monitoring Solution"
   uuid: prometheus-push
-  minimum_rancher_version: v1.5.5
+  minimum_rancher_version: v1.4.3
   questions:
   - variable: "RANCHER_SERVER"
     label: "Rancher Server"

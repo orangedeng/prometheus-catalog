@@ -1,0 +1,61 @@
+prom-conf:
+  image: orstar/prom-conf:0.0.1
+  network_mode: none
+  volumes:
+  - /etc/prom-conf/
+  tty: true
+grafana:
+  image: grafana/grafana:4.2.0
+  tty: true
+  links:
+  - prometheus:prometheus
+  volumes_from:
+  - graf-db
+  ports:
+  - 3000:3000/tcp
+  labels:
+    io.rancher.sidekicks: graf-db
+prometheus:
+  image: prom/prometheus:v1.6.0
+  volumes:
+  - /data/
+  tty: true
+  extra_hosts:
+  - "rancher-server:${RANCHER_SERVER}"
+  volumes_from:
+  - prom-conf
+  ports:
+  - 9090:9090/tcp
+  command:
+  - -alertmanager.url=http://alertmanager:9093
+  - -config.file=/etc/prom-conf/prometheus.yml
+  - -storage.local.path=/prometheus
+  - -web.console.libraries=/etc/prometheus/console_libraries
+  - -web.console.templates=/etc/prometheus/consoles
+  labels:
+    io.rancher.sidekicks: prom-conf
+graf-db:
+  image: infinityworks/graf-db:11
+  network_mode: none
+  volumes:
+  - /var/lib/grafana/
+  tty: true
+  links:
+  - prometheus:prometheus
+  command:
+  - cat
+pushgateway:
+  image: prom/pushgateway
+  stdin_open: true
+  tty: true
+  ports:
+  - 9091:9091/tcp
+  labels:
+    io.rancher.container.pull_image: always
+pushgateway-proxy:
+  image: rancher/lb-service-haproxy:v0.5.9
+  ports:
+  - 9092:9092/tcp
+  labels:
+    io.rancher.container.agent.role: environmentAdmin
+    io.rancher.container.create_agent: 'true'
