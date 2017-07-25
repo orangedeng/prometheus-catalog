@@ -1,0 +1,83 @@
+.catalog:
+  name: "Prometheus-Push-Mode"
+  version: "0.0.1"
+  description: "Prometheus Monitoring Solution"
+  uuid: prometheus-2
+  minimum_rancher_version: v1.5.5
+  questions:
+  - variable: "RANCHER_SERVER"
+    label: "Rancher Server"
+    description: "IP Address of the rancher server, no HTTP or slashes. This is only required for users that have enabled metrics to be exported by Rancher"
+    default: "0.0.0.0"
+    required: false
+    type: "string"
+  - varibale: "PUSHGATEWAY_INSTANCES_COUNT"
+    label: "Pushgateway instance count"
+    description: "Instance number of Prometheus' Pushgateway compomnent."
+    default: "1"
+    required: false
+    type: "int"
+
+prometheus:
+  scale: 1
+  health_check:
+    port: 9090
+    interval: 5000
+    unhealthy_threshold: 3
+    request_line: ''
+    healthy_threshold: 2
+    response_timeout: 5000
+
+grafana:
+  scale: 1
+  health_check:
+    port: 3000
+    interval: 5000
+    unhealthy_threshold: 3
+    request_line: ''
+    healthy_threshold: 2
+    response_timeout: 5000
+
+prometheus-rancher-exporter:
+  scale: 1
+  health_check:
+    port: 9173
+    interval: 5000
+    unhealthy_threshold: 3
+    request_line: ''
+    healthy_threshold: 2
+    response_timeout: 5000
+
+pushgateway:
+  scale: $PUSHGATEWAY_INSTANCES_COUNT
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 9091
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+
+pushgateway-proxy:
+  scale: 1
+  start_on_create: true
+  lb_config:
+    certs: []
+    port_rules:
+    - hostname: ''
+      priority: 1
+      protocol: tcp
+      service: pushgateway
+      source_port: 9092
+      target_port: 9091
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 42
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    reinitializing_timeout: 60000
